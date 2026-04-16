@@ -2,9 +2,13 @@ package com.edulive.infrastructure.adapter.in.websocket;
 
 import com.edulive.application.service.ExerciseService;
 import com.edulive.domain.model.Exercise;
+import com.edulive.infrastructure.adapter.in.web.dto.ExerciseRequestDto;
+import com.edulive.infrastructure.adapter.in.web.dto.ExerciseResponseDto;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import jakarta.validation.Valid;
 
 @Controller
 public class ExerciseWebSocketController {
@@ -17,10 +21,19 @@ public class ExerciseWebSocketController {
 
     // Ruta de entrada de webSockets (prefijo /app está configurado por el MessageBroker) -> /app/analyze
     @MessageMapping("/analyze")
-    // Ruta de salida donde los clientes se suscriben -> /topic/feedback
     @SendTo("/topic/feedback")
-    public Exercise analyzeBoard(Exercise exercise) {
-        // Analiza el evento en tiempo real y retransmite la respuesta con feedback
-        return exerciseService.processExercise(exercise);
+    public ExerciseResponseDto analyzeBoard(@Valid @Payload ExerciseRequestDto requestDto) {
+        Exercise exercise = Exercise.builder()
+                .subject(requestDto.getSubject())
+                .base64Image(requestDto.getBase64Image())
+                .build();
+
+        Exercise result = exerciseService.processExercise(exercise);
+        
+        return ExerciseResponseDto.builder()
+                .id(result.getId())
+                .subject(result.getSubject())
+                .aiFeedback(result.getAiFeedback())
+                .build();
     }
 }
