@@ -23,17 +23,14 @@ public class ExerciseWebSocketController {
     @MessageMapping("/analyze")
     @SendTo("/topic/feedback")
     public ExerciseResponseDto analyzeBoard(@Valid @Payload ExerciseRequestDto requestDto) {
-        Exercise exercise = Exercise.builder()
-                .subject(requestDto.getSubject())
-                .base64Image(requestDto.getBase64Image())
-                .build();
+        Exercise exercise = new Exercise(requestDto.getSubject(), requestDto.getBase64Image());
 
         Exercise result = exerciseService.processExercise(exercise);
         
-        return ExerciseResponseDto.builder()
-                .id(result.getId())
-                .subject(result.getSubject())
-                .aiFeedback(result.getAiFeedback())
-                .build();
+        return new ExerciseResponseDto(
+                result.getId(),
+                result.getSubject(),
+                result.getAiFeedback()
+        );
     }
 }

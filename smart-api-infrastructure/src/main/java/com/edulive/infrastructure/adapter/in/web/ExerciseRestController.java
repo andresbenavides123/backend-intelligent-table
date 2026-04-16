@@ -23,19 +23,16 @@ public class ExerciseRestController {
     public ResponseEntity<ExerciseResponseDto> analyzeExercise(@Valid @RequestBody ExerciseRequestDto requestDto) {
         
         // Mappeo DTO a Domain
-        Exercise exercise = Exercise.builder()
-                .subject(requestDto.getSubject())
-                .base64Image(requestDto.getBase64Image())
-                .build();
+        Exercise exercise = new Exercise(requestDto.getSubject(), requestDto.getBase64Image());
 
         Exercise result = exerciseService.processExercise(exercise);
         
         // Mappeo Domain a DTO
-        ExerciseResponseDto responseDto = ExerciseResponseDto.builder()
-                .id(result.getId())
-                .subject(result.getSubject())
-                .aiFeedback(result.getAiFeedback())
-                .build();
+        ExerciseResponseDto responseDto = new ExerciseResponseDto(
+                result.getId(),
+                result.getSubject(),
+                result.getAiFeedback()
+        );
 
         return ResponseEntity.ok(responseDto);
     }
