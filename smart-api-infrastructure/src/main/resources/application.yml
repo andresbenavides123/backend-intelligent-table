@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: edulive-api
+  data:
+    mongodb:
+      # Use URI from environment or default to local Docker credentials
+      uri: ${MONGODB_URI:mongodb://admin:admin_password@localhost:27017/edulive_db?authSource=admin}
+  ai:
+    openai:
+      # Tu API Key de Google AI Studio configurada por variable de entorno
+      api-key: ${GEMINI_API_KEY:your_default_api_key_here}
+      # Redirigimos el tráfico de OpenAI hacia los servidores de Gemini
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+      chat:
+        options:
+          model: gemini-1.5-flash
+          temperature: 0.2
