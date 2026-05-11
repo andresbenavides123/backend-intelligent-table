@@ -5,14 +5,16 @@ public class BoardSyncMessageDto {
     private String roomId;
     private String senderId;
     private BoardElementDto element;
+    private String payload;
 
     public BoardSyncMessageDto() {}
 
-    public BoardSyncMessageDto(String action, String roomId, String senderId, BoardElementDto element) {
+    public BoardSyncMessageDto(String action, String roomId, String senderId, BoardElementDto element, String payload) {
         this.action = action;
         this.roomId = roomId;
         this.senderId = senderId;
         this.element = element;
+        this.payload = payload;
     }
 
     public String getAction() {
@@ -45,5 +47,13 @@ public class BoardSyncMessageDto {
 
     public void setElement(BoardElementDto element) {
         this.element = element;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }

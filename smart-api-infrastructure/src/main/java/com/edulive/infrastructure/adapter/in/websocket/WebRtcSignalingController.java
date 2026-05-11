@@ -33,7 +33,7 @@ public class WebRtcSignalingController {
         
         // Re-enviar (broadcast) el mensaje a todos los clientes suscritos al topic de la sala
         // El frontend se encarga de filtrar por targetId si es un mensaje directo (como offer/answer)
-        String destination = "/topic/room/" + roomId;
+        String destination = "/topic/room/" + roomId + "/signaling";
         messagingTemplate.convertAndSend(destination, message);
     }
 }
