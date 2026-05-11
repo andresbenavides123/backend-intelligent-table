@@ -7,17 +7,19 @@ public class WebRtcMessageDto {
     private String targetId;
     private String sdp;
     private IceCandidateDto candidate;
+    private String streamType; // e.g., "camera" or "screen"
 
     public WebRtcMessageDto() {
     }
 
-    public WebRtcMessageDto(String type, String roomId, String senderId, String targetId, String sdp, IceCandidateDto candidate) {
+    public WebRtcMessageDto(String type, String roomId, String senderId, String targetId, String sdp, IceCandidateDto candidate, String streamType) {
         this.type = type;
         this.roomId = roomId;
         this.senderId = senderId;
         this.targetId = targetId;
         this.sdp = sdp;
         this.candidate = candidate;
+        this.streamType = streamType;
     }
 
     public String getType() {
@@ -66,5 +68,13 @@ public class WebRtcMessageDto {
 
     public void setCandidate(IceCandidateDto candidate) {
         this.candidate = candidate;
+    }
+
+    public String getStreamType() {
+        return streamType;
+    }
+
+    public void setStreamType(String streamType) {
+        this.streamType = streamType;
     }
 }

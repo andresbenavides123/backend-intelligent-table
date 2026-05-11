@@ -7,11 +7,14 @@ spring:
       uri: ${MONGODB_URI:mongodb://admin:admin_password@localhost:27017/edulive_db?authSource=admin}
   ai:
     openai:
-      # Tu API Key de Google AI Studio configurada por variable de entorno
-      api-key: ${GEMINI_API_KEY:your_default_api_key_here}
-      # Redirigimos el tráfico de OpenAI hacia los servidores de Gemini
-      base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+      # Groq exposes an OpenAI-compatible REST API
+      api-key: ${GROQ_API_KEY:REPLACE_WITH_YOUR_KEY}
+      base-url: https://api.groq.com/openai
       chat:
         options:
-          model: gemini-1.5-flash
+          model: meta-llama/llama-4-scout-17b-16e-instruct
           temperature: 0.2
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/exercises")
-@CrossOrigin(origins = "*") // Habilita CORS para pruebas fáciles en desarrollo
 public class ExerciseRestController {
 
     private final ExerciseService exerciseService;
