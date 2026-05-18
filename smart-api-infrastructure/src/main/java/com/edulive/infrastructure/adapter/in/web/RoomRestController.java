@@ -26,7 +26,7 @@ public class RoomRestController {
     public ResponseEntity<RoomResponseDto> generateRoom() {
         Room room = roomService.generateRoom();
         
-        String joinUrl = frontendUrl + "/room/" + room.getRoomId();
+        String joinUrl = frontendUrl + "/?room=" + room.getRoomId();
         
         RoomResponseDto responseDto = new RoomResponseDto(
                 room.getRoomId(),

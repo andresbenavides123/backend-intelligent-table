@@ -18,3 +18,6 @@ spring:
 app:
   frontend:
     url: ${FRONTEND_URL:http://localhost:5173}
+  jwt:
+    # Use environment variable in production, fallback to a secure randomly generated default for local dev
+    secret: ${JWT_SECRET:9a4f2c8d3b7e1f6a5c0d4b8e2a1f9c3d7b6e4a0f5c2d8b1e4a7c9f3d6b0e2a5f}
