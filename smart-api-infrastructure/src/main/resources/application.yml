@@ -1,13 +1,14 @@
 spring:
   application:
     name: edulive-api
+  profiles:
+    # Default local — override with SPRING_PROFILES_ACTIVE=prod in Railway
+    default: dev
   data:
     mongodb:
-      # Use URI from environment or default to local Docker credentials
       uri: ${MONGODB_URI:mongodb://admin:admin_password@localhost:27017/edulive_db?authSource=admin}
   ai:
     openai:
-      # Groq exposes an OpenAI-compatible REST API
       api-key: ${GROQ_API_KEY:REPLACE_WITH_YOUR_KEY}
       base-url: https://api.groq.com/openai
       chat:
@@ -19,5 +20,13 @@ app:
   frontend:
     url: ${FRONTEND_URL:http://localhost:5173}
   jwt:
-    # Use environment variable in production, fallback to a secure randomly generated default for local dev
     secret: ${JWT_SECRET:9a4f2c8d3b7e1f6a5c0d4b8e2a1f9c3d7b6e4a0f5c2d8b1e4a7c9f3d6b0e2a5f}
+    expiration-hours: ${JWT_EXPIRATION_HOURS:24}
+  security:
+    # Overridden per profile: false in dev, true in prod
+    require-auth: true
+    ws-require-auth: true
+    # Rate limits (requests per minute per IP)
+    rate-limit:
+      auth-rpm: 20
+      analyze-rpm: 5

@@ -1,27 +1,16 @@
 package com.edulive.infrastructure.config;
 
-import com.edulive.infrastructure.security.JwtRestInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class WebMvcConfig implements WebMvcConfigurer {
-
-    private final JwtRestInterceptor jwtRestInterceptor;
-
-    @Autowired
-    public WebMvcConfig(JwtRestInterceptor jwtRestInterceptor) {
-        this.jwtRestInterceptor = jwtRestInterceptor;
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        // Apply the interceptor to specific API paths
-        registry.addInterceptor(jwtRestInterceptor)
-                .addPathPatterns("/api/v1/**")
-                // Exclude paths that don't need authentication like Swagger or public health checks
-                .excludePathPatterns("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
-    }
+/**
+ * DESACTIVADO — Reemplazado por SecurityConfig.java + JwtAuthenticationFilter.java
+ *
+ * El registro de interceptores de Spring MVC fue reemplazado por un
+ * SecurityFilterChain de Spring Security con un OncePerRequestFilter (JwtAuthenticationFilter).
+ * Este enfoque es más robusto y tiene acceso completo al SecurityContext de Spring.
+ *
+ * Este archivo se conserva como referencia histórica pero no tiene efecto
+ * porque la anotación @Configuration fue removida intencionalmente.
+ */
+// @Configuration  ← REMOVIDO: reemplazado por SecurityConfig + JwtAuthenticationFilter
+public class WebMvcConfig {
+    // Vacío — ver SecurityConfig y JwtAuthenticationFilter
 }

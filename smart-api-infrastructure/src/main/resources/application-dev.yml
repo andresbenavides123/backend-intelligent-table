@@ -1,0 +1,13 @@
+# Perfil de desarrollo local — auth JWT es opcional
+# Actívalo con: -Dspring.profiles.active=dev  (es el default si no se especifica nada)
+app:
+  security:
+    require-auth: false
+    ws-require-auth: false
+
+# Logging más detallado en dev
+logging:
+  level:
+    com.edulive: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG

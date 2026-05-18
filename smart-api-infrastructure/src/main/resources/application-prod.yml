@@ -1,0 +1,18 @@
+# Perfil de producción — seguridad completa activada
+# Railway: establecer variable de entorno SPRING_PROFILES_ACTIVE=prod
+app:
+  security:
+    require-auth: true
+    ws-require-auth: true
+    rate-limit:
+      auth-rpm: 20
+      analyze-rpm: 5
+
+# Logging mínimo en producción (no exponer stack traces)
+logging:
+  level:
+    com.edulive: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%level] %logger{36} — %msg%n"

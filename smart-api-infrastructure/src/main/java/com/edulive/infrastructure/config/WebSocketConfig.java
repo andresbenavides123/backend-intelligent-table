@@ -1,55 +1,73 @@
 package com.edulive.infrastructure.config;
 
+import com.edulive.infrastructure.security.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
-import org.springframework.context.annotation.Bean;
-import com.edulive.infrastructure.security.JwtService;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
+/**
+ * Configuración del broker STOMP sobre WebSocket.
+ *
+ * Seguridad del canal inbound (STOMP CONNECT):
+ *   - Perfil dev  (ws-require-auth=false): token opcional, conexión siempre permitida.
+ *   - Perfil prod (ws-require-auth=true):  token JWT obligatorio y válido para conectarse.
+ *
+ * Los límites de buffer/mensaje se fijan en 5MB para soportar la transmisión
+ * de trazos complejos e imágenes Base64 pegadas en la pizarra.
+ */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtService jwtService;
+    private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
 
-    @Autowired
-    public WebSocketConfig(JwtService jwtService) {
-        this.jwtService = jwtService;
+    private final JwtService jwtService;
+    private final boolean wsRequireAuth;
+    private final String frontendUrl;
+
+    public WebSocketConfig(
+            JwtService jwtService,
+            @Value("${app.security.ws-require-auth:true}") boolean wsRequireAuth,
+            @Value("${app.frontend.url:http://localhost:5173}") String frontendUrl) {
+        this.jwtService     = jwtService;
+        this.wsRequireAuth  = wsRequireAuth;
+        this.frontendUrl    = frontendUrl;
     }
 
     @Override
     public void configureMessageBroker(@NonNull MessageBrokerRegistry config) {
-        // Habilita el broker para que atienda a los clientes en estos prefijos
-        // /topic para mensajes masivos (1 a N, ideal para enviar trazos a todos en una sala)
         config.enableSimpleBroker("/topic", "/queue");
-        // Prefijo que deben usar los clientes al enviar algo al servidor
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
-        // Endpoint principal al que el Frontend se conectará (ej. http://localhost:8080/ws-board)
         registry.addEndpoint("/ws-board")
-                .setAllowedOriginPatterns("*") // Se usa AllowedOriginPatterns "*" en dev, en prod cambiar por el dominio real
+                // En prod, reemplazado por el dominio real via FRONTEND_URL env var
+                .setAllowedOriginPatterns(frontendUrl, "http://localhost:5173", "http://127.0.0.1:5173")
                 .withSockJS();
     }
 
     @Override
-    public void configureWebSocketTransport(@NonNull org.springframework.web.socket.config.annotation.WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(5 * 1024 * 1024); // 5MB
-        registration.setSendBufferSizeLimit(5 * 1024 * 1024); // 5MB
-        registration.setSendTimeLimit(20000);
+    public void configureWebSocketTransport(
+            @NonNull org.springframework.web.socket.config.annotation.WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(5 * 1024 * 1024); // 5 MB
+        registration.setSendBufferSizeLimit(5 * 1024 * 1024);
+        registration.setSendTimeLimit(20_000);
     }
 
     @Bean
@@ -61,27 +79,49 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void configureClientInboundChannel(@NonNull org.springframework.messaging.simp.config.ChannelRegistration registration) {
+    public void configureClientInboundChannel(
+            @NonNull org.springframework.messaging.simp.config.ChannelRegistration registration) {
+
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
-                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                
-                if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String authHeader = accessor.getFirstNativeHeader("Authorization");
-                    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                        throw new IllegalArgumentException("Missing or invalid Authorization header");
-                    }
-                    
-                    String token = authHeader.substring(7);
-                    if (!jwtService.isTokenValid(token)) {
-                        throw new IllegalArgumentException("Invalid JWT token");
-                    }
-                    
-                    // We can also extract the username and attach it to the session if needed
-                    String userName = jwtService.extractUserName(token);
-                    accessor.getSessionAttributes().put("userName", userName);
+                StompHeaderAccessor accessor =
+                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
+                if (accessor == null || !StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    return message;
                 }
+
+                String authHeader = accessor.getFirstNativeHeader("Authorization");
+
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    // Token presente → validarlo siempre (dev y prod)
+                    String token = authHeader.substring(7);
+                    if (jwtService.isTokenValid(token)) {
+                        String userName = jwtService.extractUserName(token);
+                        String roomId   = jwtService.extractRoomId(token);
+                        if (accessor.getSessionAttributes() != null) {
+                            accessor.getSessionAttributes().put("userName", userName);
+                            accessor.getSessionAttributes().put("roomId", roomId);
+                        }
+                        log.debug("WebSocket CONNECT autenticado: user={}, room={}", userName, roomId);
+                    } else {
+                        // Token inválido
+                        if (wsRequireAuth) {
+                            log.warn("WebSocket CONNECT rechazado — token inválido (prod mode)");
+                            throw new IllegalArgumentException("Token JWT inválido o expirado.");
+                        }
+                        log.debug("WebSocket CONNECT con token inválido — permitido en modo dev");
+                    }
+                } else {
+                    // Sin token
+                    if (wsRequireAuth) {
+                        log.warn("WebSocket CONNECT rechazado — sin token (prod mode)");
+                        throw new IllegalArgumentException("Se requiere token JWT para conectarse al WebSocket.");
+                    }
+                    log.debug("WebSocket CONNECT sin token — permitido en modo dev");
+                }
+
                 return message;
             }
         });
