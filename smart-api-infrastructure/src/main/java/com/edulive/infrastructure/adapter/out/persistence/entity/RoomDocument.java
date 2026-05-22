@@ -16,9 +16,9 @@ public class RoomDocument {
     private boolean active;
 
     /**
-     * Historial embebido de elementos de la pizarra.
-     * Cada elemento es un trazo vectorial, texto flotante o imagen Base64.
-     * Se limpia cuando el usuario presiona "Limpiar" en la pizarra.
+     * Embedded history of whiteboard elements.
+     * Each element is a vector stroke, floating text, or a Base64-encoded image.
+     * Cleared when the user clicks "Clear" on the whiteboard.
      */
     private List<BoardElementDocument> boardElements = new ArrayList<>();
 

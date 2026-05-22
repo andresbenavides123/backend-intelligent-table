@@ -1,9 +1,9 @@
 package com.edulive.domain.model;
 
 /**
- * Entidad de dominio que representa un elemento persistido en la pizarra de una sala.
- * Un elemento puede ser un trazo vectorial (path), un texto flotante (text) o
- * una imagen pegada en formato Base64 (image).
+ * Domain entity representing a persisted element on a room's whiteboard.
+ * An element can be a vector stroke (path), a floating text label (text),
+ * or a pasted image in Base64 format (image).
  */
 public class BoardElement {
 
@@ -12,7 +12,7 @@ public class BoardElement {
     private String type;
     private double x;
     private double y;
-    /** JSON serializado del CanvasPath para trazos; texto plano; o Base64 para imágenes */
+    /** Serialized JSON of the CanvasPath for strokes; plain text for text; or Base64 for images */
     private String content;
     private String color;
     private int size;

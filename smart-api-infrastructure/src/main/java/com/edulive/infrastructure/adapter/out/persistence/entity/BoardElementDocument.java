@@ -1,13 +1,13 @@
 package com.edulive.infrastructure.adapter.out.persistence.entity;
 
 /**
- * POJO embebido (sin @Document propio) que representa un elemento de la pizarra
- * almacenado dentro del documento de sala en la colección "rooms".
+ * Embedded POJO (no @Document of its own) representing a whiteboard element
+ * stored inside the room document in the "rooms" collection.
  *
- * El campo {@code content} almacena:
- *   - Tipo "path":  JSON serializado del CanvasPath (trazos vectoriales de react-sketch-canvas)
- *   - Tipo "text":  Texto plano del elemento flotante
- *   - Tipo "image": Datos de imagen en formato Base64 (data-URL incluido)
+ * The {@code content} field stores:
+ *   - Type "path":  Serialized JSON of the CanvasPath (vector strokes from react-sketch-canvas)
+ *   - Type "text":  Plain text content of the floating element
+ *   - Type "image": Base64 image data (data-URL included)
  */
 public class BoardElementDocument {
 

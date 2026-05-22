@@ -52,8 +52,8 @@ public class RoomRepositoryAdapter implements RoomRepositoryPort {
     }
 
     /**
-     * Añade un elemento al historial de la pizarra de forma atómica usando $push.
-     * Se evita cargar el documento completo en memoria para mejor rendimiento.
+     * Atomically adds an element to the room's whiteboard history using $push.
+     * Avoids loading the full document into memory for better performance.
      */
     @Override
     public void addBoardElement(String roomId, BoardElement element) {
@@ -65,7 +65,7 @@ public class RoomRepositoryAdapter implements RoomRepositoryPort {
     }
 
     /**
-     * Limpia el historial de la pizarra usando $set con lista vacía (operación atómica).
+     * Clears the whiteboard history using $set with an empty list (atomic operation).
      */
     @Override
     public void clearBoardElements(String roomId) {
@@ -75,8 +75,8 @@ public class RoomRepositoryAdapter implements RoomRepositoryPort {
     }
 
     /**
-     * Obtiene todos los elementos del historial de la pizarra de una sala.
-     * Retorna lista vacía si la sala no existe o no tiene historial.
+     * Retrieves all whiteboard history elements for a given room.
+     * Returns an empty list if the room does not exist or has no history.
      */
     @Override
     public List<BoardElement> getBoardElements(String roomId) {
@@ -91,7 +91,7 @@ public class RoomRepositoryAdapter implements RoomRepositoryPort {
                 .orElse(new ArrayList<>());
     }
 
-    // ── Mapeo entre dominio e infraestructura ─────────────────────────────────
+    // ── Domain ↔ infrastructure mapping helpers ───────────────────────────────────────
 
     private BoardElementDocument toDocument(BoardElement e) {
         return new BoardElementDocument(

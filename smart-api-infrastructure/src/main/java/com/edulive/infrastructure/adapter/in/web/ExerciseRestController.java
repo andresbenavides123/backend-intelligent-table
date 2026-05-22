@@ -21,12 +21,12 @@ public class ExerciseRestController {
     @PostMapping("/analyze")
     public ResponseEntity<ExerciseResponseDto> analyzeExercise(@Valid @RequestBody ExerciseRequestDto requestDto) {
         
-        // Mappeo DTO a Domain
+        // Map DTO to domain model
         Exercise exercise = new Exercise(requestDto.getSubject(), requestDto.getBase64Image());
 
         Exercise result = exerciseService.processExercise(exercise);
-        
-        // Mappeo Domain a DTO
+
+        // Map domain to DTO
         ExerciseResponseDto responseDto = new ExerciseResponseDto(
                 result.getId(),
                 result.getSubject(),
