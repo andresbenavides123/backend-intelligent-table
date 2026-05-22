@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException e) {
         Map<String, String> response = new HashMap<>();
-        response.put("error", "Datos invalidos: " + e.getMessage());
+        response.put("error", "Invalid data: " + e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -39,13 +39,13 @@ public class GlobalExceptionHandler {
         if (isRateLimitError(e)) {
             log.warn("Groq API rate limit exceeded — returning 429 to client");
             Map<String, String> response = new HashMap<>();
-            response.put("error", "Limite de solicitudes de IA alcanzado. Por favor espera un momento e intenta de nuevo.");
+            response.put("error", "AI rate limit reached. Please wait a moment and try again.");
             response.put("code", "RATE_LIMIT_EXCEEDED");
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response);
         }
 
         Map<String, String> response = new HashMap<>();
-        response.put("error", "Error interno del servidor. Por favor, revisa los datos enviados.");
+        response.put("error", "Internal server error. Please check the data you sent.");
         response.put("details", e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
