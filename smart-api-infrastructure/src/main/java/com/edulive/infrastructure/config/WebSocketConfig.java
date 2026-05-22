@@ -52,6 +52,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(@NonNull MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
+        // Habilita enrutamiento de mensajes personales: /user/queue/...
+        // Necesario para enviar el historial de pizarra únicamente al cliente que se conecta
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
