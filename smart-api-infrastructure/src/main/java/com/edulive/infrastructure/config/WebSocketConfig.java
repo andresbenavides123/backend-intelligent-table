@@ -61,7 +61,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-board")
                 // En prod, reemplazado por el dominio real via FRONTEND_URL env var
-                .setAllowedOriginPatterns(frontendUrl, "http://localhost:5173", "http://127.0.0.1:5173")
+                .setAllowedOriginPatterns(frontendUrl, "http://localhost:5173", "http://127.0.0.1:5173", "https://*.vercel.app")
                 .withSockJS();
     }
 

@@ -120,12 +120,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Origenes permitidos explícitamente (sin wildcards con allowCredentials=true)
-        config.setAllowedOrigins(List.of(
+        // Orígenes permitidos mediante patrones (soporta subdominios dinámicos de Vercel)
+        config.setAllowedOriginPatterns(List.of(
                 frontendUrl,
                 "http://localhost:5173",
                 "http://127.0.0.1:5173",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://*.vercel.app"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
