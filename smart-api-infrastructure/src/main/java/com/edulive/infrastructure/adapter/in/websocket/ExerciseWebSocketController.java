@@ -19,7 +19,7 @@ public class ExerciseWebSocketController {
         this.exerciseService = exerciseService;
     }
 
-    // Ruta de entrada de webSockets (prefijo /app está configurado por el MessageBroker) -> /app/analyze
+    // WebSocket entry path (MessageBroker configures the /app prefix) -> /app/analyze
     @MessageMapping("/analyze")
     @SendTo("/topic/feedback")
     public ExerciseResponseDto analyzeBoard(@Valid @Payload ExerciseRequestDto requestDto) {
