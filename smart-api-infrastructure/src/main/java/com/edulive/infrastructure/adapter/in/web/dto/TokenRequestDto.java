@@ -5,12 +5,12 @@ import jakarta.validation.constraints.Size;
 
 public class TokenRequestDto {
 
-    @NotBlank(message = "El roomId no puede estar vacío")
-    @Size(max = 100, message = "El roomId no puede superar 100 caracteres")
+    @NotBlank(message = "Room ID cannot be blank")
+    @Size(max = 100, message = "Room ID cannot exceed 100 characters")
     private String roomId;
 
-    @NotBlank(message = "El nombre no puede estar vacío")
-    @Size(min = 2, max = 60, message = "El nombre debe tener entre 2 y 60 caracteres")
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 2, max = 60, message = "Name must be between 2 and 60 characters")
     private String name;
 
     public TokenRequestDto() {}
