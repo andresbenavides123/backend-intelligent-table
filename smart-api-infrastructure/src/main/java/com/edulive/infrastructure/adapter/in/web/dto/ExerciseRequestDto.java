@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public class ExerciseRequestDto {
 
-    @NotBlank(message = "El asunto o materia (subject) no puede estar vacío")
+    @NotBlank(message = "Subject cannot be blank")
     private String subject;
 
-    @NotBlank(message = "Debe enviar una imagen en formato base64 (base64Image)")
+    @NotBlank(message = "A base64 image must be provided")
     private String base64Image;
 
     public String getSubject() { return subject; }

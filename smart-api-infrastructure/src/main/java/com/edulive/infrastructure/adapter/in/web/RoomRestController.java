@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
-@CrossOrigin(origins = "*")
 public class RoomRestController {
 
     private final RoomService roomService;

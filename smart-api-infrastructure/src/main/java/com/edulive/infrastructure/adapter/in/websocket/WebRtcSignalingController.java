@@ -20,19 +20,19 @@ public class WebRtcSignalingController {
     }
 
     /**
-     * Endpoint para procesar mensajes de señalización WebRTC (Offer, Answer, ICE Candidates, Join, Leave).
-     * El cliente debe enviar el mensaje a /app/room/{roomId}/signaling
+     * Endpoint for processing WebRTC signaling messages (Offer, Answer, ICE Candidates, Join, Leave).
+     * Client must send the message to /app/room/{roomId}/signaling.
      */
     @MessageMapping("/room/{roomId}/signaling")
     public void processSignalingMessage(@DestinationVariable String roomId, @Payload WebRtcMessageDto message) {
-        logger.info("Received signaling message of type: {} in room: {} from sender: {} targeting: {}", 
+        logger.info("Received signaling message of type: {} in room: {} from sender: {} targeting: {}",
                 message.getType(), roomId, message.getSenderId(), message.getTargetId());
-        
-        // Asegurar que el mensaje tenga el roomId correcto por si acaso no lo incluyeron en el payload
+
+        // Ensure the message has the correct roomId in case the client omitted it from the payload
         message.setRoomId(roomId);
-        
-        // Re-enviar (broadcast) el mensaje a todos los clientes suscritos al topic de la sala
-        // El frontend se encarga de filtrar por targetId si es un mensaje directo (como offer/answer)
+
+        // Broadcast the message to all clients subscribed to the room topic.
+        // The frontend filters by targetId for direct messages (e.g. offer/answer).
         String destination = "/topic/room/" + roomId + "/signaling";
         messagingTemplate.convertAndSend(destination, message);
     }

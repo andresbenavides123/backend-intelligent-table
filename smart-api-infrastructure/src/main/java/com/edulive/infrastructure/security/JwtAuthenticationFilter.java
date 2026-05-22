@@ -17,15 +17,15 @@ import java.io.IOException;
 import java.util.Collections;
 
 /**
- * Filtro JWT que se ejecuta UNA SOLA VEZ por request (OncePerRequestFilter).
+ * JWT filter that runs ONCE per request (OncePerRequestFilter).
  *
- * Flujo:
- *  1. Extrae el token del header "Authorization: Bearer <token>"
- *  2. Si no hay token → deja continuar (Spring Security decide con base en la config del endpoint)
- *  3. Si el token es válido → fija el Authentication en el SecurityContext
- *  4. Si el token es inválido → limpia el SecurityContext (Spring Security retornará 401)
+ * Flow:
+ *  1. Extracts the token from the "Authorization: Bearer <token>" header.
+ *  2. If no token is present → passes through (Spring Security decides access based on endpoint config).
+ *  3. If the token is valid  → sets the Authentication object in the SecurityContext.
+ *  4. If the token is invalid → clears the SecurityContext (Spring Security will return 401).
  *
- * Rutas excluidas (shouldNotFilter): /api/v1/auth/**, /ws-board/**, /swagger-ui/**, /v3/api-docs/**
+ * Excluded paths (shouldNotFilter): /api/v1/auth/**, /ws-board/**, /swagger-ui/**, /v3/api-docs/**
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader(AUTH_HEADER);
 
-        // Sin header Authorization → continúa (Spring Security manejará el acceso según la config)
+        // No Authorization header → continue (Spring Security handles access according to config)
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userName = jwtService.extractUserName(token);
                 String roomId   = jwtService.extractRoomId(token);
 
-                // Solo establecer autenticación si aún no hay ninguna en el contexto
+                // Only set authentication if none is already present in the context
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
@@ -73,26 +73,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
 
-                // Pasar claims como atributos del request para los controladores
-                request.setAttribute("userName", userName);
+                // Forward claims as request attributes for use in controllers
+                request.setAttribute("username", userName);
                 request.setAttribute("roomId", roomId);
 
             } else {
-                // Token presente pero inválido → limpiar contexto para garantizar 401
+                // Token present but invalid → clear context to guarantee 401
                 SecurityContextHolder.clearContext();
-                log.debug("Token JWT inválido rechazado para: {}", request.getRequestURI());
+                log.debug("Invalid JWT token rejected for path: {}", request.getRequestURI());
             }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
-            log.error("Error procesando token JWT: {}", e.getMessage());
+            log.error("Error processing JWT token: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
     }
 
     /**
-     * Omite este filtro completamente para paths públicos.
-     * Spring Security aún aplicará sus reglas de acceso, pero no es necesario validar JWT aquí.
+     * Skips this filter entirely for public paths.
+     * Spring Security still applies its access rules, but JWT validation is not needed here.
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {

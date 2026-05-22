@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Endpoint público para obtener un token JWT de sesión.
- * Excluido de la autenticación JWT en SecurityConfig (PUBLIC_PATHS).
+ * Public endpoint for obtaining a JWT session token.
+ * Excluded from JWT authentication in SecurityConfig (PUBLIC_PATHS).
  *
- * Rate limiting aplicado por RateLimitFilter: máximo 20 req/min por IP.
+ * Rate limiting applied by RateLimitFilter: max 20 req/min per IP.
  */
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -24,9 +24,9 @@ public class AuthController {
     }
 
     /**
-     * Genera un token JWT de sesión para el usuario.
+     * Generates a JWT session token for the user.
      *
-     * @param request { roomId: "uuid-de-la-sala", name: "Nombre del usuario" }
+     * @param request { roomId: "room-uuid", name: "User Name" }
      * @return        { token: "eyJhbGci..." }
      */
     @PostMapping("/token")
