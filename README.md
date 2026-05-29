@@ -86,3 +86,8 @@ mvn spring-boot:run
 ## 📄 Licencia
 
 Proyecto académico y educativo.
+
+## Tecnologías Utilizadas
+- Java
+- Spring Boot
+- Maven
