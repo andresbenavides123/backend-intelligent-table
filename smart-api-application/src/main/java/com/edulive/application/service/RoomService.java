@@ -19,3 +19,4 @@ public class RoomService {
         return roomRepositoryPort.save(room);
     }
 }
+// Optimización interna del servicio
