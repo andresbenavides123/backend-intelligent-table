@@ -5,21 +5,17 @@ public class WebRtcMessageDto {
     private String roomId;
     private String senderId;
     private String targetId;
-    private String sdp;
-    private IceCandidateDto candidate;
-    private String streamType; // e.g., "camera" or "screen"
+    private String payload;
 
     public WebRtcMessageDto() {
     }
 
-    public WebRtcMessageDto(String type, String roomId, String senderId, String targetId, String sdp, IceCandidateDto candidate, String streamType) {
+    public WebRtcMessageDto(String type, String roomId, String senderId, String targetId, String payload) {
         this.type = type;
         this.roomId = roomId;
         this.senderId = senderId;
         this.targetId = targetId;
-        this.sdp = sdp;
-        this.candidate = candidate;
-        this.streamType = streamType;
+        this.payload = payload;
     }
 
     public String getType() {
@@ -54,27 +50,11 @@ public class WebRtcMessageDto {
         this.targetId = targetId;
     }
 
-    public String getSdp() {
-        return sdp;
+    public String getPayload() {
+        return payload;
     }
 
-    public void setSdp(String sdp) {
-        this.sdp = sdp;
-    }
-
-    public IceCandidateDto getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(IceCandidateDto candidate) {
-        this.candidate = candidate;
-    }
-
-    public String getStreamType() {
-        return streamType;
-    }
-
-    public void setStreamType(String streamType) {
-        this.streamType = streamType;
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }
