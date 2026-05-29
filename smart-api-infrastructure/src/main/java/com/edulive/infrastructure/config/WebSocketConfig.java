@@ -68,10 +68,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureWebSocketTransport(
             @NonNull org.springframework.web.socket.config.annotation.WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(5 * 1024 * 1024); // 5 MB
-        registration.setSendBufferSizeLimit(5 * 1024 * 1024);
-        registration.setSendTimeLimit(20_000);
+        registration.setMessageSizeLimit(5 * 1024 * 1024);    // 5 MB — supports large board images
+        registration.setSendBufferSizeLimit(5 * 1024 * 1024); // 5 MB
+        // 30 s timeout accommodates slow TURN-relayed connections where signaling
+        // messages may take longer to traverse the relay path.
+        registration.setSendTimeLimit(30_000);
     }
+
 
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
