@@ -91,3 +91,7 @@ Proyecto académico y educativo.
 - Java
 - Spring Boot
 - Maven
+
+## Requisitos del Sistema
+- JDK 17 o superior
+- Gestor de Base de Datos configurado
